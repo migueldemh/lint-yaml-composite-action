@@ -1,0 +1,52 @@
+name: Lint YAML Files
+
+description: A composite action for linting YAML files.
+
+inputs:
+  python-version:
+    description: The version of Python to use when running `yamllint`.
+    default: 3.14.2
+    required: false
+  shellcheck-enabled:
+    description: Enable ShellCheck linting for shell scripts in the repository.
+    default: "false"
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install yamllint
+      run: |
+        pip install --upgrade pip
+        pip install yamllint
+      shell: sh
+
+    - name: Install ShellCheck
+      if: inputs.shellcheck-enabled == 'true'
+      run: |-
+        sudo apt-get update
+        sudo apt-get install --yes shellcheck
+      shell: sh
+
+    - name: Lint YAML Files
+      run: |-
+        yamllint .
+      shell: sh
+
+    - name: Lint Shell Scripts
+      if: inputs.shellcheck-enabled == 'true'
+      run: |-
+        shell_scripts=$(find . -type f -name "*.sh")
+
+        if [ -z "$shell_scripts" ]; then
+          echo "No shell scripts found. Skipping ShellCheck."
+          exit 0
+        fi
+
+        echo "$shell_scripts" | xargs shellcheck -x
+      shell: sh
