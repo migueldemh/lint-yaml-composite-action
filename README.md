@@ -29,4 +29,3 @@ jobs:
 | Input            | Required? | Default  | Description                                         |
 | ---------------- | --------- | -------- | --------------------------------------------------- |
 | `python-version` | `false`   | `3.14.2` | The version of Python to use when running yamllint. |
-| `shellcheck-enabled` | `false`   | `false`  | Enable ShellCheck linting for shell scripts in the repository. |
